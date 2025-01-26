@@ -3,7 +3,6 @@ import Select from "react-select";
 import { UsersHeaders } from "../../helpers/headers/usersHeaders";
 import userService from "../../service/user.service";
 import CustomTable from "../common/CustomTable";
-import SearchBox from "../common/SearchBox";
 import UserModal from "./UserModal";
 import ViewDocuments from "./ViewDocuments";
 
@@ -214,11 +213,11 @@ const ViewUsers = () => {
             className="col-12 col-sm-12 col-md-6 col-lg-3  mt-2 d-flex d-flex-wrap ms-auto"
             style={{ marginBottom: "4px" }}
           >
-            <SearchBox
+            {/* <SearchBox
               placeholder="Search here..."
               allData={data}
               setFilteredData={setFilterData}
-            />
+            /> */}
           </div>
         </div>
       </div>

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-// import { errorToast } from "../react-toastfiy/toast";
 
 function SearchBox(props) {
   const {
@@ -11,15 +10,15 @@ function SearchBox(props) {
   } = props;
   const [searchQuery, setSearchQuery] = useState("");
 
-  function debounce(func, delay) {
-    let debounceTimer;
-    return function () {
-      const context = this;
-      const args = arguments;
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => func.apply(context, args), delay);
-    };
-  }
+  // function debounce(func, delay) {
+  //   let debounceTimer;
+  //   return function () {
+  //     const context = this;
+  //     const args = arguments;
+  //     clearTimeout(debounceTimer);
+  //     debounceTimer = setTimeout(() => func.apply(context, args), delay);
+  //   };
+  // }
 
   const handleSearchQueryChanged = (val, data) => {
     try {

@@ -27,8 +27,8 @@ export const UsersHeaders = [
     header: "Pan",
     dataKey: "pan_no",
   },
-  {
-    header: "State",
-    dataKey: "state",
-  },
+  // {
+  //   header: "State",
+  //   dataKey: "state",
+  // },
 ];

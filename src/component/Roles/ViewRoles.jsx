@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
-import CustomTable from "../common/CustomTable";
+import React, { useEffect, useState } from "react";
 import { RolesHeaders } from "../../helpers/headers/roleHeaders";
-import SearchBox from "./../common/SearchBox";
-import RoleModal from "./RoleModal";
 import roleService from "../../service/role.service";
+import CustomTable from "../common/CustomTable";
+import RoleModal from "./RoleModal";
 
 const ViewRoles = () => {
   const header = RolesHeaders;
@@ -149,11 +148,11 @@ const ViewRoles = () => {
             className="col-12 col-sm-12 col-md-6 col-lg-3  mt-2 d-flex d-flex-wrap ms-auto"
             style={{ marginBottom: "4px" }}
           >
-            <SearchBox
+            {/* <SearchBox
               placeholder="Search here..."
               allData={roleData}
               setFilteredData={setFilterData}
-            />
+            /> */}
           </div>
         </div>
       </div>

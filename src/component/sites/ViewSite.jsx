@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { SiteHeaders } from "../../helpers/headers/siteHeaders";
+import React, { useEffect, useState } from "react";
 import Select from "react-select";
-import SearchBox from "../common/SearchBox";
+import { SiteHeaders } from "../../helpers/headers/siteHeaders";
+import siteService from "../../service/site.service";
 import CustomTable from "../common/CustomTable";
 import SiteModal from "./SiteModal";
-import siteService from "../../service/site.service";
 
 const ViewSite = () => {
   const header = SiteHeaders;
@@ -158,11 +157,11 @@ const ViewSite = () => {
             className="col-12 col-sm-12 col-md-6 col-lg-3  mt-2 d-flex d-flex-wrap ms-auto"
             style={{ marginBottom: "4px" }}
           >
-            <SearchBox
+            {/* <SearchBox
               placeholder="Search here..."
               allData={siteData}
               setFilteredData={setFilterData}
-            />
+            /> */}
           </div>
         </div>
       </div>
