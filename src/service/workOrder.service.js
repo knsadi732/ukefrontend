@@ -23,11 +23,12 @@ class WorkOrderService {
       throw error;
     }
   };
-  GetWorkOrders = async () => {
+  GetWorkOrders = async (formData) => {
     try {
       const response = await axios({
         method: "post",
         url: `http://localhost:5000/api/work-order/get-work_orders`,
+        data: formData,
         headers: {
           "content-type": "multipart/form-data",
         },
@@ -43,7 +44,7 @@ class WorkOrderService {
     try {
       const response = await axios({
         method: "post",
-        url: `http://localhost:5000/api/WorkOrder/get-WorkOrder-by-id`,
+        url: `http://localhost:5000/api/work-order/get-work_order-by-id`,
         data: formData,
         headers: {
           "content-type": "multipart/form-data",
@@ -60,7 +61,7 @@ class WorkOrderService {
     try {
       const response = await axios({
         method: "post",
-        url: `http://localhost:5000/api/WorkOrder/update-WorkOrder-by-id/${id}`,
+        url: `http://localhost:5000/api/work-order/update-work_order-by-id/${id}`,
         data: formData,
         headers: {
           "content-type": "multipart/form-data",

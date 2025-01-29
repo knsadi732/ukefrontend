@@ -5,6 +5,7 @@ import CustomTable from "../common/CustomTable";
 import { WoHeaders } from "../../helpers/headers/woHeaders";
 import { useNavigate } from "react-router-dom";
 import workOrderService from "./../../service/workOrder.service";
+import siteService from "../../service/site.service";
 
 const ViewWorkOrder = () => {
   const navigate = useNavigate();
@@ -267,10 +268,12 @@ const ViewWorkOrder = () => {
   const [modal, setModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [modalData, setModalData] = useState(initialValues);
-  const [stateList, setStateList] = useState(Options);
+
   const [workOrderData, setWorkOrderData] = useState(data);
+  const [id, setId] = useState(data);
   const [filterData, setFilterData] = useState(data);
   const [dropdownLabel, setDropdownLabel] = useState("Add Work Order");
+  const [siteList, setSiteList] = useState();
 
   useEffect(() => {
     try {
@@ -290,20 +293,52 @@ const ViewWorkOrder = () => {
     } catch (error) {}
   }, []);
 
+  useEffect(() => {
+    try {
+      siteService.GetSites().then((res) => {
+        if (res?.status === 200) {
+          const sites = res?.data?.docs.map((val, index) => ({
+            label: `${val?.site_name}-${val?.site_shorthand}`,
+            value: val,
+          }));
+          setSiteList(sites);
+        } else {
+          console.warn(res?.message);
+        }
+      });
+    } catch (error) {}
+  }, []);
+
   const handleEdit = (data) => {
-    setModalData(data);
-    setModal(true);
+    try {
+      console.log({data})
+      const form_data = new FormData();
+      form_data.append("id", data?._id);
+      workOrderService.getWorkOrderById(form_data).then((res) => {
+        console.log({ res });
+        if (res?.status === 200) {
+          setId(data?._id);
+          setDropdownLabel("Update Work Order");
+          setModalData(data);
+          setModal(true);
+        } else {
+          console.log(res?.message);
+        }
+      });
+    } catch (error) {
+      setLoading(false);
+      console.error("An error occurred while fetching roles:", error);
+    }
   };
   const handleDelete = () => {};
 
   const handleSelectSite = (e) => {
-    console.log({e})
+    console.log({ e });
     if (e.value === "all") {
       setFilterData(workOrderData);
     } else {
       const selected_value = workOrderData.filter(
-        (val) => val?.site_id ===
-        parseInt(e.value?.site_id)
+        (val) => val?.site_id === parseInt(e.value?.site_id)
       );
       console.log({ selected_value });
       setFilterData(selected_value);
@@ -318,11 +353,12 @@ const ViewWorkOrder = () => {
       {modal && (
         <WorkOrderModal
           show={modal}
-          Options={Options}
+          id={id}
+          siteList={siteList}
           setModal={setModal}
           dropdownLabel={dropdownLabel}
           data={modalData}
-          setData={setWorkOrderData}
+          setWorkOrderData={setWorkOrderData}
           setFilterData={setFilterData}
           setLoading={setLoading}
           onHide={() => {
@@ -373,7 +409,7 @@ const ViewWorkOrder = () => {
             }}
           >
             <Select
-              options={stateList} // Ensure options is correctly spelled in lowercase
+              options={siteList} // Ensure options is correctly spelled in lowercase
               onChange={handleSelectSite} // Use camelCase for consistency
               // value={
               //   stateList.find((option) => option.value === selectedValue) ||

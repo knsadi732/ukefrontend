@@ -4,10 +4,13 @@ import userService from "../../service/user.service";
 import roleService from "../../service/role.service";
 import Select from "react-select";
 import axios from "axios";
+import workOrderService from "./../../service/workOrder.service";
+import siteService from "./../../service/site.service";
 
 const UserModal = (props) => {
   const {
     data,
+    id,
     show,
     onHide,
     setModal,
@@ -34,7 +37,10 @@ const UserModal = (props) => {
   const [loadingButton, setLoadingButton] = useState(false);
   const [userFormData, setUserFormData] = useState(data);
   const [roleData, setRoleData] = useState([]);
+  const [workOrderData, setWorkOrderData] = useState([]);
+  const [siteData, setSiteData] = useState([]);
   const [error, setError] = useState([]);
+  // console.log({ data, id });
 
   useEffect(() => {
     try {
@@ -46,6 +52,40 @@ const UserModal = (props) => {
             value: val,
           }));
           setRoleData(roles);
+        } else {
+          console.warn(res?.message);
+        }
+      });
+      siteService.GetSites().then((res) => {
+        if (res?.status === 200) {
+          const sites = res?.data?.docs.map((val, index) => ({
+            label: `${val?.site_name}-${val?.site_shorthand}`,
+            value: val,
+          }));
+          setSiteData(sites);
+          let site_id = "";
+
+          if (dropdownLabel !== "Edit User") {
+            console.log("Create User Line no 69 Printed");
+            site_id = sites[0]?.value?._id;
+           
+          } else {
+            console.log("Edit User Line no 72 Printed", dropdownLabel);
+             site_id = userFormData?.site_id;
+          }
+          const form_data = new FormData();
+          form_data.append("site_id", site_id);
+          workOrderService.GetWorkOrders(form_data).then((res) => {
+            if (res?.status === 200) {
+              const roles = res?.data?.map((val, index) => ({
+                label: val?.wo_name,
+                value: val,
+              }));
+              setWorkOrderData(roles);
+            } else {
+              console.warn(res?.message);
+            }
+          });
         } else {
           console.warn(res?.message);
         }
@@ -93,10 +133,11 @@ const UserModal = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Conditionally exclude 'password' from the required fields if editing a user
     const requiredFields = [
       "name",
       "email",
-      "password",
       "phone",
       "aadhar_no",
       "aadhar_front_image",
@@ -113,8 +154,16 @@ const UserModal = (props) => {
       "blood_group",
       "medical",
       "role",
+      "wo_id",
+      "site_id",
     ];
 
+    // If editing a user, don't require the password field
+    if (dropdownLabel !== "Edit User") {
+      requiredFields.push("password");
+    }
+
+    // Validate required fields
     for (let field of requiredFields) {
       if (!userFormData[field]) {
         alert(`${field} is required`);
@@ -131,12 +180,13 @@ const UserModal = (props) => {
     form_data.append("pan_no", userFormData?.pan_no);
     form_data.append("address", userFormData?.address);
     form_data.append("email", userFormData?.email);
-
     form_data.append(
       "highest_qualification",
       userFormData?.highest_qualification
     );
     form_data.append("specializations", userFormData?.specializations);
+    form_data.append("wo_id", userFormData?.wo_id);
+    form_data.append("site_id", userFormData?.site_id);
     form_data.append("nominee_name", userFormData?.nominee_name);
     form_data.append("nominee_aadhar_no", userFormData?.nominee_aadhar_no);
     form_data.append("ifsc", userFormData?.ifsc);
@@ -148,6 +198,8 @@ const UserModal = (props) => {
     form_data.append("esic", userFormData?.esic);
     form_data.append("role", userFormData?.role);
     form_data.append("driving_license_no", userFormData?.driving_license_no);
+
+    // Append files if available
     if (userFormData?.aadhar_front_image) {
       form_data.append("aadhar_front_image", userFormData?.aadhar_front_image);
     }
@@ -179,9 +231,10 @@ const UserModal = (props) => {
       });
     }
 
+    // Handle Edit User case
     if (dropdownLabel === "Edit User") {
-      form_data.append("id", userFormData?._id);
-      userService.UpdateUser(userFormData?._id, form_data).then((res) => {
+      form_data.append("id", id);
+      userService.UpdateUser(id, form_data).then((res) => {
         setLoadingButton(false);
         if (res?.status === 200) {
           setModal(false);
@@ -204,6 +257,7 @@ const UserModal = (props) => {
         }
       });
     } else {
+      // Handle Create User case (password required)
       form_data.append("password", userFormData?.password);
       userService.CreateUser(form_data).then((res) => {
         setLoadingButton(false);
@@ -284,7 +338,27 @@ const UserModal = (props) => {
     }
   };
 
-  console.log({ userFormData });
+  const handleSelectSite = (selectedOption) => {
+    setUserFormData((prev) => ({
+      ...prev,
+      site_id: selectedOption.value?._id,
+    }));
+    if (selectedOption.value?._id !== "") {
+      const form_data = new FormData();
+      form_data.append("site_id", selectedOption.value?._id);
+      workOrderService.GetWorkOrders(form_data).then((res) => {
+        if (res?.status === 200) {
+          const roles = res?.data?.map((val, index) => ({
+            label: val?.wo_name,
+            value: val,
+          }));
+          setWorkOrderData(roles);
+        } else {
+          console.warn(res?.message);
+        }
+      });
+    }
+  };
   try {
     return (
       <>
@@ -1043,7 +1117,7 @@ const UserModal = (props) => {
                 <hr></hr>
               </div>
               <div className="row mt-1">
-                <div className="col-12">
+                <div className="col-4">
                   <label htmlFor="role" className=" form-label mb-0">
                     Role
                   </label>
@@ -1058,6 +1132,42 @@ const UserModal = (props) => {
                         role: selectedOption.label,
                       }))
                     } // Handle selected option
+                    styles={{ zIndex: 2 }}
+                  />
+                </div>
+                <div className="col-4">
+                  <label htmlFor="role" className=" form-label mb-0">
+                    Select Site
+                  </label>
+                  <Select
+                    options={siteData}
+                    value={siteData.filter(
+                      (val) => val?.value?._id === userFormData?.site_id
+                    )}
+                    onChange={handleSelectSite} // Handle selected option
+                    styles={{ zIndex: 2 }}
+                  />
+                </div>
+                <div className="col-4">
+                  <label htmlFor="wo_id" className=" form-label mb-0">
+                    Work Order
+                  </label>
+                  <Select
+                    options={workOrderData}
+                    value={workOrderData.filter(
+                      (val) => val?.value?._id === userFormData?.wo_id
+                    )}
+                    onChange={(selectedOption) =>
+                      setUserFormData((prev) => ({
+                        ...prev,
+                        wo_id: selectedOption.value?._id,
+                      }))
+                    }
+                    // isDisabled={userFormData?.site_id === ""}
+                    isDisabled={
+                      userFormData?.site_id === "" ||
+                      userFormData?.site_id === undefined
+                    }
                     styles={{ zIndex: 2 }}
                   />
                 </div>

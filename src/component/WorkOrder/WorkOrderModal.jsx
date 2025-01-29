@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
 import siteService from "../../service/site.service";
 import Creatable from "react-select/creatable";
@@ -6,13 +6,14 @@ import workOrderService from "../../service/workOrder.service";
 
 const WorkOrderModal = (props) => {
   const {
+    id,
     data,
     show,
     dropdownLabel,
     onHide,
-    Options,
+    siteList,
     setModal,
-    setData,
+    setWorkOrderData,
     setFilterData,
     setLoading,
   } = props;
@@ -45,10 +46,11 @@ const WorkOrderModal = (props) => {
     console.log({ e });
     setWorkOrderFormData((prev) => ({
       ...prev,
-      site_id: e?.value?.site_id,
+      site_id: e?.value?._id,
       site_name: e?.value?.site_name,
     }));
   };
+  console.log({ workOrderFormData });
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -81,38 +83,42 @@ const WorkOrderModal = (props) => {
     form_data.append("nature_of_work", workOrderFormData?.nature_of_work);
     form_data.append("start_date", workOrderFormData?.start_date);
     form_data.append("end_date", workOrderFormData?.end_date);
-    form_data.append("inspecting_authority", workOrderFormData?.inspecting_authority);
-    form_data.append("executing_authority", workOrderFormData?.executing_authority);
+    form_data.append(
+      "inspecting_authority",
+      workOrderFormData?.inspecting_authority
+    );
+    form_data.append(
+      "executing_authority",
+      workOrderFormData?.executing_authority
+    );
     form_data.append("work_order_tenure", workOrderFormData?.work_order_tenure);
     form_data.append("work_order_value", workOrderFormData?.work_order_value);
     form_data.append("billing_cycle", workOrderFormData?.billing_cycle);
-    if (dropdownLabel === "Edit Site") {
+    if (dropdownLabel === "Update Work Order") {
       form_data.append("id", workOrderFormData?._id);
-      workOrderService
-        .UpdateSite(workOrderFormData?._id, form_data)
-        .then((res) => {
-          console.log({ res });
-          setLoadingButton(false);
-          if (res?.status === 200) {
-            setModal(false);
-            setLoading(true);
-            siteService.GetSites().then((res) => {
-              setLoading(false);
-              if (res?.status === 200) {
-                const roles = res?.data?.docs.map((val, index) => ({
-                  no: index + 1,
-                  ...val,
-                }));
-                setData(roles);
-                setFilterData(roles);
-              } else {
-                console.warn(res?.message);
-              }
-            });
-          } else {
-            console.warn(res?.message);
-          }
-        });
+      workOrderService.UpdateWorkOrder(id, form_data).then((res) => {
+        console.log({ res });
+        setLoadingButton(false);
+        if (res?.status === 200) {
+          setModal(false);
+          setLoading(true);
+          workOrderService.GetWorkOrders().then((res) => {
+            setLoading(false);
+            if (res?.status === 200) {
+              const wo_list = res?.data.map((val, index) => ({
+                no: index + 1,
+                ...val,
+              }));
+              setWorkOrderData(wo_list);
+              setFilterData(wo_list);
+            } else {
+              console.warn(res?.message);
+            }
+          });
+        } else {
+          console.warn(res?.message);
+        }
+      });
     } else {
       workOrderService.CreateWorkOrder(form_data).then((res) => {
         console.log({ res });
@@ -163,12 +169,12 @@ const WorkOrderModal = (props) => {
                       Site Name
                     </label>
                     <Creatable
-                      options={Options}
+                      options={siteList}
                       onChange={handleChangeOption}
-                      value={Options.find(
+                      value={siteList.find(
                         (option) =>
-                          // console.log(option.value.site_id , data?.site_id)
-                          option.value.site_id === data?.site_id
+                          // console.log(option.value._id , data?.site_id)
+                          option.value._id === data?.site_id
                       )}
                     />
                   </div>
@@ -362,7 +368,7 @@ const WorkOrderModal = (props) => {
                 </button>
               ) : (
                 <button className=" btn btn-success">
-                  {dropdownLabel === "Edit Site" ? "Update" : "Submit"}
+                  {dropdownLabel === "Update Work Order" ? "Update" : "Submit"}
                 </button>
               )}
             </Modal.Footer>

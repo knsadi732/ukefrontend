@@ -5,9 +5,12 @@ import userService from "../../service/user.service";
 import CustomTable from "../common/CustomTable";
 import UserModal from "./UserModal";
 import ViewDocuments from "./ViewDocuments";
+import siteService from "../../service/site.service";
+import workOrderService from "../../service/workOrder.service";
 
 const ViewUsers = () => {
   const header = UsersHeaders;
+
   const initialValues = {
     name: "",
     phone: "",
@@ -38,14 +41,21 @@ const ViewUsers = () => {
     role: "",
     driving_license_no: "",
     driving_license_image: "",
+    site_id: "",
+    wo_id: "",
   };
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
+  const [id, setId] = useState([]);
   const [filterData, setFilterData] = useState([]);
   const [dropdownLabel, setDropdownLabel] = useState("");
   const [modalData, setModalData] = useState(initialValues);
   const [viewDocModal, setViewDocModal] = useState(false);
   const [viewDocModalData, setViewDocModalData] = useState([]);
+  const [workOrderData, setWorkOrderData] = useState([]);
+  const [siteData, setSiteData] = useState([]);
+  const [selectedSite, setSelectedSite] = useState("");
+  const [selectedWO, setSelectedWO] = useState("");
   const [modal, setModal] = useState(false);
   let setflag = "add";
 
@@ -58,7 +68,6 @@ const ViewUsers = () => {
       try {
         setLoading(true);
         const res = await userService.GetUsers();
-        console.log({ res });
         setLoading(false);
         if (res?.status === 200) {
           const users = res?.data?.docs.map((val, index) => ({
@@ -80,13 +89,42 @@ const ViewUsers = () => {
     fetchUsers();
   }, []);
 
+  useEffect(() => {
+    try {
+      siteService.GetSites().then((res) => {
+        if (res?.status === 200) {
+          const sites = res?.data?.docs.map((val, index) => ({
+            label: `${val?.site_name}-${val?.site_shorthand}`,
+            value: val,
+          }));
+          setSiteData(sites);
+          workOrderService.GetWorkOrders().then((res) => {
+            if (res?.status === 200) {
+              const roles = res?.data?.map((val, index) => ({
+                label: val?.wo_name,
+                value: val,
+              }));
+              setWorkOrderData(roles);
+            } else {
+              console.warn(res?.message);
+            }
+          });
+        } else {
+          console.warn(res?.message);
+        }
+      });
+    } catch (error) {
+      console.log(error?.msg);
+    }
+  }, []);
+
   const handleEdit = (data) => {
     try {
-      console.log({ data });
       const form_data = new FormData();
       form_data.append("id", data?.id);
       userService.getUserById(form_data).then((res) => {
         if (res?.status === 200) {
+          setId(data?.id);
           setDropdownLabel("Edit User");
           setModalData(res?.data);
           setModal(true);
@@ -101,7 +139,7 @@ const ViewUsers = () => {
   };
 
   const handleDelete = (id) => {
-    try { 
+    try {
       const form_data = new FormData();
       form_data.append("id", id);
       userService.DeleteUserById(form_data).then((res) => {
@@ -131,10 +169,41 @@ const ViewUsers = () => {
       console.error("An error occurred while fetching roles:", error);
     }
   };
+
+  const handleSelectSite = (e) => {
+    setSelectedSite(e?.value?._id);
+
+    const selectedUser = data?.filter(
+      (value) => value?.site_id === e?.value?._id
+    );
+    setFilterData(selectedUser);
+    const form_data = new FormData();
+    form_data.append("site_id", e?.value?._id);
+    workOrderService.GetWorkOrders(form_data).then((res) => {
+      if (res?.status === 200) {
+        const wo_list = res?.data?.map((val, index) => ({
+          label: val?.wo_name,
+          value: val,
+        }));
+        setWorkOrderData(wo_list);
+        setSelectedWO(wo_list[0]?.value?._id);
+      } else {
+        console.warn(res?.message);
+      }
+    });
+  };
+  const handleSelectWorkOrder = (e) => {
+    setSelectedWO(e?.value?._id);
+    const selectedUser = data?.filter(
+      (value) => value?.wo_id === e?.value?._id
+    );
+    setFilterData(selectedUser);
+  };
   return (
     <>
       {modal && (
         <UserModal
+          id={id}
           show={modal}
           setData={setData}
           setLoading={setLoading}
@@ -192,7 +261,7 @@ const ViewUsers = () => {
           style={{ marginLeft: "0px", marginRight: "0px" }}
         >
           <div
-            className="col-12 col-sm-12 col-md-6 col-lg-3 mt-2"
+            className="col-12 col-sm-12 col-md-4 col-lg-3 mt-2"
             style={{
               marginBottom: "4px",
               fontSize: "small",
@@ -202,15 +271,36 @@ const ViewUsers = () => {
             }}
           >
             <Select
-              // options={stateList}
-              // onChange={handleSelect}
-              // value={stateList.find((option) => option.value === selectedValue)}
-              placeholder="Select State"
+              options={siteData}
+              onChange={handleSelectSite}
+              value={siteData.find(
+                (option) => option.value._id === selectedSite
+              )}
+              placeholder="Select Site"
+            />
+          </div>
+          <div
+            className="col-12 col-sm-12 col-md-4 col-lg-3 mt-2"
+            style={{
+              marginBottom: "4px",
+              fontSize: "small",
+              position: "sticky",
+              top: 0,
+              zIndex: 5,
+            }}
+          >
+            <Select
+              options={workOrderData}
+              onChange={handleSelectWorkOrder}
+              value={workOrderData.find(
+                (option) => option.value?._id === selectedWO
+              )}
+              placeholder="Select Work Order"
             />
           </div>
 
           <div
-            className="col-12 col-sm-12 col-md-6 col-lg-3  mt-2 d-flex d-flex-wrap ms-auto"
+            className="col-12 col-sm-12 col-md-4 col-lg-3  mt-2 d-flex d-flex-wrap ms-auto"
             style={{ marginBottom: "4px" }}
           >
             {/* <SearchBox
