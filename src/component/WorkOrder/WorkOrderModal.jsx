@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Modal } from "react-bootstrap";
 import siteService from "../../service/site.service";
 import Creatable from "react-select/creatable";
+import workOrderService from "../../service/workOrder.service";
 
 const WorkOrderModal = (props) => {
   const {
@@ -9,29 +10,14 @@ const WorkOrderModal = (props) => {
     show,
     dropdownLabel,
     onHide,
+    Options,
     setModal,
     setData,
     setFilterData,
     setLoading,
   } = props;
-  const option = [
-    {
-      label: "IISCO Steel Plant- SAIL(ISP)",
-      value: { id: 1, name: "IISCO Steel Plant", short_hand: "SAIL(ISP)" },
-    },
-    {
-      label: "Bokaro Steel Limited- SAIL(BSL)",
-      value: { id: 1, name: "Bokaro Steel Limited", short_hand: "SAIL(BSL)" },
-    },
-    {
-      label: "Rauorkela Steel Plant- SAIL(BSL)",
-      value: { id: 1, name: "Rauorkela Steel Plant", short_hand: "SAIL(RSP)" },
-    },
-    {
-      label: "Bhilai Steel Plant- SAIL(BSL)",
-      value: { id: 1, name: "Bhilai Steel Plant", short_hand: "SAIL(RSP)" },
-    },
-  ];
+
+  console.log({ data });
 
   const [loadingButton, setLoadingButton] = useState(false);
   const [workOrderFormData, setWorkOrderFormData] = useState(data);
@@ -54,20 +40,32 @@ const WorkOrderModal = (props) => {
       ...prev,
       [name]: value,
     }));
-  }; 
-   const handleChangeOption = (e) => {
-    console.log({e})
-     setWorkOrderFormData((prev) => ({
-       ...prev,
-       site_id: e?.value?.id,
-       site_name: e?.value?.name,
-     }));
-   };
+  };
+  const handleChangeOption = (e) => {
+    console.log({ e });
+    setWorkOrderFormData((prev) => ({
+      ...prev,
+      site_id: e?.value?.site_id,
+      site_name: e?.value?.site_name,
+    }));
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const requiredFields = ["site_name", "work_order_name"];
-
+    const requiredFields = [
+      "site_id",
+      "site_name",
+      "wo_no",
+      "wo_name",
+      "nature_of_work",
+      "start_date",
+      "end_date",
+      "inspecting_authority",
+      "executing_authority",
+      "work_order_tenure",
+      "work_order_value",
+      "billing_cycle",
+    ];
     for (let field of requiredFields) {
       if (!workOrderFormData[field]) {
         alert(`${field} is required`);
@@ -75,56 +73,66 @@ const WorkOrderModal = (props) => {
         return;
       }
     }
-
     const form_data = new FormData();
+    form_data.append("site_id", workOrderFormData?.site_id);
     form_data.append("site_name", workOrderFormData?.site_name);
-    form_data.append("work_order_name", workOrderFormData?.work_order_name);
-
+    form_data.append("wo_no", workOrderFormData?.wo_no);
+    form_data.append("wo_name", workOrderFormData?.wo_name);
+    form_data.append("nature_of_work", workOrderFormData?.nature_of_work);
+    form_data.append("start_date", workOrderFormData?.start_date);
+    form_data.append("end_date", workOrderFormData?.end_date);
+    form_data.append("inspecting_authority", workOrderFormData?.inspecting_authority);
+    form_data.append("executing_authority", workOrderFormData?.executing_authority);
+    form_data.append("work_order_tenure", workOrderFormData?.work_order_tenure);
+    form_data.append("work_order_value", workOrderFormData?.work_order_value);
+    form_data.append("billing_cycle", workOrderFormData?.billing_cycle);
     if (dropdownLabel === "Edit Site") {
       form_data.append("id", workOrderFormData?._id);
-      siteService.UpdateSite(workOrderFormData?._id, form_data).then((res) => {
-        console.log({ res });
-        setLoadingButton(false);
-        if (res?.status === 200) {
-          setModal(false);
-          setLoading(true);
-          siteService.GetSites().then((res) => {
-            setLoading(false);
-            if (res?.status === 200) {
-              const roles = res?.data?.docs.map((val, index) => ({
-                no: index + 1,
-                ...val,
-              }));
-              setData(roles);
-              setFilterData(roles);
-            } else {
-              console.warn(res?.message);
-            }
-          });
-        } else {
-          console.warn(res?.message);
-        }
-      });
+      workOrderService
+        .UpdateSite(workOrderFormData?._id, form_data)
+        .then((res) => {
+          console.log({ res });
+          setLoadingButton(false);
+          if (res?.status === 200) {
+            setModal(false);
+            setLoading(true);
+            siteService.GetSites().then((res) => {
+              setLoading(false);
+              if (res?.status === 200) {
+                const roles = res?.data?.docs.map((val, index) => ({
+                  no: index + 1,
+                  ...val,
+                }));
+                setData(roles);
+                setFilterData(roles);
+              } else {
+                console.warn(res?.message);
+              }
+            });
+          } else {
+            console.warn(res?.message);
+          }
+        });
     } else {
-      siteService.CreateSite(form_data).then((res) => {
+      workOrderService.CreateWorkOrder(form_data).then((res) => {
         console.log({ res });
         setLoadingButton(false);
         if (res?.status === 201) {
           setModal(false);
-          setLoading(true);
-          siteService.GetSites().then((res) => {
-            setLoading(false);
-            if (res?.status === 200) {
-              const roles = res?.data?.docs.map((val, index) => ({
-                no: index + 1,
-                ...val,
-              }));
-              setData(roles);
-              setFilterData(roles);
-            } else {
-              console.warn(res?.message);
-            }
-          });
+          // setLoading(true);
+          // workOrderService.GetSites().then((res) => {
+          //   setLoading(false);
+          //   if (res?.status === 200) {
+          //     const roles = res?.data?.docs.map((val, index) => ({
+          //       no: index + 1,
+          //       ...val,
+          //     }));
+          //     setData(roles);
+          //     setFilterData(roles);
+          //   } else {
+          //     console.warn(res?.message);
+          //   }
+          // });
         } else {
           console.warn(res?.message);
         }
@@ -154,23 +162,43 @@ const WorkOrderModal = (props) => {
                     <label htmlFor="site_name" className=" form-label mb-0">
                       Site Name
                     </label>
-                    <Creatable options={option} onChange={handleChangeOption}/>
+                    <Creatable
+                      options={Options}
+                      onChange={handleChangeOption}
+                      value={Options.find(
+                        (option) =>
+                          // console.log(option.value.site_id , data?.site_id)
+                          option.value.site_id === data?.site_id
+                      )}
+                    />
                   </div>
                 </div>
 
                 <div className="row mt-1">
                   <div className="col-12">
-                    <label
-                      htmlFor="work_order_name"
-                      className=" form-label mb-0"
-                    >
+                    <label htmlFor="wo_name" className=" form-label mb-0">
                       Work Order Name
                     </label>
                     <input
                       type="text"
-                      name="work_order_name"
-                      id="work_order_name"
-                      value={workOrderFormData?.work_order_name}
+                      name="wo_name"
+                      id="wo_name"
+                      value={workOrderFormData?.wo_name}
+                      onChange={handleChange}
+                      className=" form-control"
+                      placeholder="Enter Work Order Name"
+                      required
+                    />
+                  </div>
+                  <div className="col-12">
+                    <label htmlFor="wo_no" className=" form-label mb-0">
+                      Work Order No
+                    </label>
+                    <input
+                      type="text"
+                      name="wo_no"
+                      id="wo_no"
+                      value={workOrderFormData?.wo_no}
                       onChange={handleChange}
                       className=" form-control"
                       placeholder="Enter Work Order Name"
@@ -179,37 +207,136 @@ const WorkOrderModal = (props) => {
                   </div>
                   <div className="col-12">
                     <label
-                      htmlFor="work_order_no"
-                      className=" form-label mb-0"
-                    >
-                      Work Order No
-                    </label>
-                    <input
-                      type="text"
-                      name="work_order_no"
-                      id="work_order_no"
-                      value={workOrderFormData?.work_order_no}
-                      onChange={handleChange}
-                      className=" form-control"
-                      placeholder="Enter Work Order Name"
-                      required
-                    />
-                  </div>
-                   <div className="col-12">
-                    <label
-                      htmlFor="work_order_nature"
+                      htmlFor="nature_of_work"
                       className=" form-label mb-0"
                     >
                       Work Order Nature
                     </label>
                     <input
                       type="text"
-                      name="work_order_nature"
-                      id="work_order_nature"
-                      value={workOrderFormData?.work_order_nature}
+                      name="nature_of_work"
+                      id="nature_of_work"
+                      value={workOrderFormData?.nature_of_work}
                       onChange={handleChange}
                       className=" form-control"
                       placeholder="Enter Work Order Name"
+                      required
+                    />
+                  </div>
+                  <div className="col-12">
+                    <label htmlFor="start_date" className=" form-label mb-0">
+                      Start Date
+                    </label>
+                    <input
+                      type="date"
+                      name="start_date"
+                      id="start_date"
+                      value={workOrderFormData?.start_date}
+                      onChange={handleChange}
+                      className=" form-control"
+                      placeholder="Enter Work Order Name"
+                      required
+                    />
+                  </div>
+                  <div className="col-12">
+                    <label htmlFor="end_date" className=" form-label mb-0">
+                      End Date
+                    </label>
+                    <input
+                      type="date"
+                      name="end_date"
+                      id="end_date"
+                      value={workOrderFormData?.end_date}
+                      onChange={handleChange}
+                      className=" form-control"
+                      placeholder="Enter End Date"
+                      required
+                    />
+                  </div>
+                  <div className="col-12">
+                    <label
+                      htmlFor="inspecting_authority"
+                      className=" form-label mb-0"
+                    >
+                      Inspecting Authority
+                    </label>
+                    <input
+                      type="text"
+                      name="inspecting_authority"
+                      id="inspecting_authority"
+                      value={workOrderFormData?.inspecting_authority}
+                      onChange={handleChange}
+                      className=" form-control"
+                      placeholder="Enter Inspecting Authority Name"
+                      required
+                    />
+                  </div>
+                  <div className="col-12">
+                    <label
+                      htmlFor="executing_authority"
+                      className=" form-label mb-0"
+                    >
+                      Executing Authority
+                    </label>
+                    <input
+                      type="text"
+                      name="executing_authority"
+                      id="executing_authority"
+                      value={workOrderFormData?.executing_authority}
+                      onChange={handleChange}
+                      className=" form-control"
+                      placeholder="Enter Executing Authority Name"
+                      required
+                    />
+                  </div>{" "}
+                  <div className="col-12">
+                    <label
+                      htmlFor="work_order_tenure"
+                      className=" form-label mb-0"
+                    >
+                      Tenure
+                    </label>
+                    <input
+                      type="text"
+                      name="work_order_tenure"
+                      id="work_order_tenure"
+                      value={workOrderFormData?.work_order_tenure}
+                      onChange={handleChange}
+                      className=" form-control"
+                      placeholder="Enter Tenure"
+                      required
+                    />
+                  </div>
+                  <div className="col-12">
+                    <label
+                      htmlFor="work_order_value"
+                      className=" form-label mb-0"
+                    >
+                      Work Order Price
+                    </label>
+                    <input
+                      type="text"
+                      name="work_order_value"
+                      id="work_order_value"
+                      value={workOrderFormData?.work_order_value}
+                      onChange={handleChange}
+                      className=" form-control"
+                      placeholder="Enter Work Order Value"
+                      required
+                    />
+                  </div>
+                  <div className="col-12">
+                    <label htmlFor="billing_cycle" className=" form-label mb-0">
+                      Billing Cycle
+                    </label>
+                    <input
+                      type="text"
+                      name="billing_cycle"
+                      id="billing_cycle"
+                      value={workOrderFormData?.billing_cycle}
+                      onChange={handleChange}
+                      className=" form-control"
+                      placeholder="Enter  Billing Cycle"
                       required
                     />
                   </div>

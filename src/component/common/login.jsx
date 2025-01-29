@@ -75,11 +75,11 @@ const Login = () => {
   return (
     <>
       <div className="container d-flex d-flex-wrap justify-content-center mt-3">
-        <div className="col-md-7 col-12 rounded bg-body">
+        <div className="col-md-5 col-12 rounded bg-body">
           <form className="ms-1" onClick={handleSubmit}>
             <div className="row mt-2">
-              <div className="col-12 col-md-6 ">
-                <label htmlFor="phone" className=" form-label mb-0 ms-0">
+              <div className="col-12">
+                <label htmlFor="phone" className=" form-label mb-0">
                   Phone
                 </label>
                 <input
@@ -92,8 +92,8 @@ const Login = () => {
                   onChange={handleChange}
                 />
               </div>
-              <div className="col-12 col-md-6 ">
-                <label htmlFor="password" className=" form-label mb-0 ms-0">
+              <div className="col-12">
+                <label htmlFor="password" className=" form-label mb-0">
                   Password
                 </label>
                 <input

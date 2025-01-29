@@ -80,11 +80,11 @@ const ViewUsers = () => {
     fetchUsers();
   }, []);
 
-  const handleEdit = (id) => {
+  const handleEdit = (data) => {
     try {
-      console.log({ id });
+      console.log({ data });
       const form_data = new FormData();
-      form_data.append("id", id);
+      form_data.append("id", data?.id);
       userService.getUserById(form_data).then((res) => {
         if (res?.status === 200) {
           setDropdownLabel("Edit User");

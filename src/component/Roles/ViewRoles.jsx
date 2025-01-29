@@ -43,13 +43,13 @@ const ViewRoles = () => {
     fetchRoles();
   }, []);
 
-  const handleEdit = (id) => {
+  const handleEdit = (data) => {
     // getRolesById;
     try {
       // setLoading(true);
-      console.log({ id });
+      console.log({ data });
       const form_data = new FormData();
-      form_data.append("id", id);
+      form_data.append("id", data?.id);
       roleService.getRolesById(form_data).then((res) => {
         if (res?.status === 200) {
           setModalData(res?.data);
@@ -68,7 +68,7 @@ const ViewRoles = () => {
   const handleDelete = (id) => {
     // getRolesById;
     try {
-      // setLoading(true);
+      setLoading(true);
       console.log({ id });
       const form_data = new FormData();
       form_data.append("id", id);

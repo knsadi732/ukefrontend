@@ -36,10 +36,10 @@ const ViewSite = () => {
     });
   }, []);
 
-  const handleEdit = (id) => {
+  const handleEdit = (data) => {
     try {
       const form_data = new FormData();
-      form_data.append("id", id);
+      form_data.append("id", data?.id);
       siteService.getSiteById(form_data).then((res) => {
         if (res?.status === 200) {
           setDropdownLabel("Edit Site");

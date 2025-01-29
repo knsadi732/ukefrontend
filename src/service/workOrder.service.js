@@ -10,7 +10,7 @@ class WorkOrderService {
     try {
       const response = await axios({
         method: "post",
-        url: `http://localhost:5000/api/workOrder/create`,
+        url: `http://localhost:5000/api/work-order/create`,
         data: formData,
         headers: {
           "content-type": "multipart/form-data",
@@ -19,7 +19,7 @@ class WorkOrderService {
 
       return response.data;
     } catch (error) {
-      console.error("Error in CreateWorkOrder service:", error);
+      console.error("Error in Create Work Order service:", error);
       throw error;
     }
   };
@@ -27,7 +27,7 @@ class WorkOrderService {
     try {
       const response = await axios({
         method: "post",
-        url: `http://localhost:5000/api/WorkOrder/get-WorkOrders`,
+        url: `http://localhost:5000/api/work-order/get-work_orders`,
         headers: {
           "content-type": "multipart/form-data",
         },
