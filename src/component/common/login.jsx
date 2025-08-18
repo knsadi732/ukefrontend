@@ -2,8 +2,16 @@ import Joi from "joi";
 import React, { useEffect, useState } from "react";
 import authService from "../../service/auth.service";
 import Button from "./Button";
+import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const accessToken = localStorage.getItem("accessToken");
+  const navigate = useNavigate();
+  let user = null;
+  if (accessToken) {
+    user = jwtDecode(accessToken);
+  }
   useEffect(() => {
     document.title = "Login";
   }, []);
@@ -37,8 +45,6 @@ const Login = () => {
     }
     return errors;
   };
-
-  // Validate individual fields
   const validateProperty = (event) => {
     const { name, value } = event.target;
     const obj = { [name]: value };
@@ -51,32 +57,40 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    const errors = validate();
-    setFormErrors(errors || {});
-
-    if (errors) {
-      setIsLoading(false);
-      return;
-    }
-
-    const form_data = new FormData();
-    form_data.append("phone", formValues.phone);
-    form_data.append("password", formValues.password);
 
     try {
-      const response = await authService.login(form_data); 
-      console.log("Login successful:", response);
-      setIsLoading(false);
+      const form_data = new FormData();
+      form_data.append("phone", formValues.phone);
+      form_data.append("password", formValues.password);
+      const res = await authService.login(form_data);
+      if (res?.status === 200) {
+        const authToken = res?.data?.accessToken;
+        const roleName = res?.data?.role;
+     
+        localStorage.setItem("accessToken", authToken);
+        localStorage.setItem("role_name", roleName);
+        const user = jwtDecode(authToken);
+        if (roleName === "Super Admin") {
+          navigate("/");
+        } else {
+          navigate("/");
+        }
+      } else {
+        console.log(res?.msg); // Handle error response from the API
+      }
     } catch (error) {
       console.error("Login failed:", error);
+    } finally {
       setIsLoading(false);
     }
   };
+
+
   return (
     <>
       <div className="container d-flex d-flex-wrap justify-content-center mt-3">
         <div className="col-md-5 col-12 rounded bg-body">
-          <form className="ms-1" onClick={handleSubmit}>
+          <form className="ms-1" onSubmit={handleSubmit}>
             <div className="row mt-2">
               <div className="col-12">
                 <label htmlFor="phone" className=" form-label mb-0">

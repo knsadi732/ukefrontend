@@ -1,15 +1,87 @@
-import React, { useRef } from "react";
-import { Link } from "react-router-dom";
+import React, { useRef, useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { FaSearch } from "react-icons/fa";
+// import { showNavbarSearchURL } from "../helpers/contants";
 
-const Navbar = () => {
-  const navHamburgerBtn = useRef(null);
+const NavBar = () => {
+  const [search, setSearch] = useState("");
+
+  const location = useLocation();
+  const [showSearchBox, setShowSearchBox] = useState(false);
+  const navigate = useNavigate();
+  const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 1020);
+  const [searchToggle, setSearchToggle] = useState(false);
+
+  const handleResize = () => {
+    setIsSmallScreen(window.innerWidth < 1020);
+  };
+
+  useEffect(() => {
+    window.addEventListener("resize", handleResize);
+    navigate("/login");
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  const handleSearch = (e) => {
+    if (search?.value !== "" && search?.value !== undefined) {
+      navigate(`/search?search=${search.value}`);
+    }
+  };
+
+  const handleChangeSearch = (e) => {
+    const { name, value } = e.target;
+    setSearch((prev) => ({
+      ...prev,
+      value,
+    }));
+  };
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handleSearch();
+    }
+  };
+
+  const currentPageURL = window.location.pathname;
+
+
   return (
     <>
-      <nav className="navbar navbar-expand-lg bg-body-tertiary p-3">
-        <div className="container-fluid">
-          <Link className="navbar-brand" to="/">
-            UKE
+         <nav className="navbar navbar-expand-lg navbar-light bg-white">
+        <div className=" container-fluid px-2">
+          <Link
+            className="navbar-brand"
+            to="/"
+            style={{ backgroundColor: "transparent" }}
+          >
+            <img
+              // src={ACPLLOGO}
+              alt="UKE"
+              style={{
+                height: "2rem",
+                width: "auto",
+                mixBlendMode: "multiply",
+              }}
+            />
           </Link>
+          {isSmallScreen && (
+            <div
+              style={{
+                marginLeft: "auto",
+                marginRight: "2rem",
+                fontSize: "x-large",
+              }}
+            >
+              <ul className="navbar-nav ms-auto">
+                <li className="nav-item">
+                  <FaSearch onClick={() => setSearchToggle(true)} />
+                </li>
+              </ul>
+            </div>
+          )}
+
           <button
             className="navbar-toggler"
             type="button"
@@ -18,56 +90,32 @@ const Navbar = () => {
             aria-controls="navbarSupportedContent"
             aria-expanded="false"
             aria-label="Toggle navigation"
-            ref={navHamburgerBtn}
           >
             <span className="navbar-toggler-icon"></span>
           </button>
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+            <ul className="navbar-nav px-1">
               <li className="nav-item">
-                <Link className="nav-link active" aria-current="page" to="/">
+                <a
+                  className={`nav-link ${
+                    currentPageURL === "/" ? "active fw-semibold" : ""
+                  }`}
+                  href="/"
+                >
                   Home
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="/users">
-                  Users
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="/site">
-                  Site
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="/work_order">
-                  Work Order
-                </Link>
+                </a>
               </li>
             </ul>
             <ul className="navbar-nav ms-auto">
-              <li className="nav-item">
-                <Link
-                  className="nav-link"
-                  to={`/roles`}
-                  onClick={() => {
-                    window.innerWidth < 992 && navHamburgerBtn.current.click();
-                  }}
-                >
-                  Roles
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link
-                  className="nav-link"
-                  to={`/login`}
-                  onClick={() => {
-                    window.innerWidth < 992 && navHamburgerBtn.current.click();
-                  }}
-                >
-                  Login
-                </Link>
-              </li>
+              <>
+                {location?.pathname !== "/login" && (
+                  <li className="nav-item ps-2">
+                    <Link className=" btn btn-success" to="/login">
+                      Login
+                    </Link>
+                  </li>
+                )}
+              </>
             </ul>
           </div>
         </div>
@@ -76,4 +124,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default NavBar;

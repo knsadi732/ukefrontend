@@ -6,6 +6,7 @@ import CustomTable from "../common/CustomTable";
 import SiteModal from "./SiteModal";
 
 const ViewSite = () => {
+
   const header = SiteHeaders;
   const initialValues = {
     site_name: "",
@@ -20,20 +21,35 @@ const ViewSite = () => {
   const [modal, setModal] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
-    siteService.GetSites().then((res) => {
-      setLoading(false);
-      if (res?.status === 200) {
-        const roles = res?.data?.docs.map((val, index) => ({
-          no: index + 1,
-          ...val,
-        }));
-        setSiteData(roles);
-        setFilterData(roles);
-      } else {
-        console.warn(res?.message);
+    const fetchData = async () => {
+      setLoading(true);
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        console.error("No access token found, redirecting to login.");
+        return;
       }
-    });
+
+      try {
+        const res = await siteService.GetSites();
+        setLoading(false);
+        if (res?.status === 200) {
+          const roles = res?.data?.docs.map((val, index) => ({
+            no: index + 1,
+            ...val,
+          })); // Debug transformed data
+
+          setSiteData(roles);
+          setFilterData(roles);
+        } else {
+          console.warn("API Error Message:", res?.message);
+        }
+      } catch (error) {
+        console.error("Error fetching sites:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const handleEdit = (data) => {
@@ -61,7 +77,6 @@ const ViewSite = () => {
       form_data.append("id", id);
       siteService.DeleteSiteById(form_data).then((res) => {
         if (res?.status === 200) {
-          console.log({ res });
           siteService.GetSites().then((res) => {
             setLoading(false);
             if (res?.status === 200) {

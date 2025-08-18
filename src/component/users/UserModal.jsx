@@ -14,6 +14,7 @@ const UserModal = (props) => {
     show,
     onHide,
     setModal,
+    siteDataName,
     setData,
     setFilterData,
     setLoading,
@@ -38,9 +39,8 @@ const UserModal = (props) => {
   const [userFormData, setUserFormData] = useState(data);
   const [roleData, setRoleData] = useState([]);
   const [workOrderData, setWorkOrderData] = useState([]);
-  const [siteData, setSiteData] = useState([]);
+  const [siteData, setSiteData] = useState(siteDataName);
   const [error, setError] = useState([]);
-  // console.log({ data, id });
 
   useEffect(() => {
     try {
@@ -56,25 +56,9 @@ const UserModal = (props) => {
           console.warn(res?.message);
         }
       });
-      siteService.GetSites().then((res) => {
-        if (res?.status === 200) {
-          const sites = res?.data?.docs.map((val, index) => ({
-            label: `${val?.site_name}-${val?.site_shorthand}`,
-            value: val,
-          }));
-          setSiteData(sites);
-          let site_id = "";
 
-          if (dropdownLabel !== "Edit User") {
-            console.log("Create User Line no 69 Printed");
-            site_id = sites[0]?.value?._id;
-           
-          } else {
-            console.log("Edit User Line no 72 Printed", dropdownLabel);
-             site_id = userFormData?.site_id;
-          }
           const form_data = new FormData();
-          form_data.append("site_id", site_id);
+          form_data.append("site_id", siteData[0]?.value?._id);
           workOrderService.GetWorkOrders(form_data).then((res) => {
             if (res?.status === 200) {
               const roles = res?.data?.map((val, index) => ({
@@ -86,10 +70,28 @@ const UserModal = (props) => {
               console.warn(res?.message);
             }
           });
-        } else {
-          console.warn(res?.message);
-        }
-      });
+
+      // siteService.GetSites().then((res) => {
+      //   console.log("Res",{res})
+      //   if (res?.status === 200) {
+      //     const sites = res?.data?.docs.map((val, index) => ({
+      //       label: `${val?.site_name}-${val?.site_shorthand}`,
+      //       value: val,
+      //     }));
+      //     setSiteData(sites);
+      //     let site_id = "";
+
+      //     if (dropdownLabel !== "Edit User") {
+      //       site_id = sites[0]?.value?._id;
+
+      //     } else {
+      //        site_id = userFormData?.site_id;
+      //     }
+
+      //   } else {
+      //     console.warn(res?.message);
+      //   }
+      // });
     } catch (error) {
       console.log(error?.msg);
     }
@@ -296,36 +298,40 @@ const UserModal = (props) => {
     setUserFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  useEffect(() => {
-    if (userFormData?.ifsc?.length === 11) {
-      const fetchBankDetails = async () => {
-        try {
-          if (userFormData?.ifsc) {
-            setError(""); // Clear previous errors
-            const res = await axios.get(
-              `https://ifsc.razorpay.com/${userFormData?.ifsc}`
-            );
-            if (res?.status === 200) {
-              const bank_name_and_branch = `${res?.data?.BANK}-${res?.data?.BRANCH}-${res?.data?.CENTRE}`;
-              setUserFormData((prev) => ({
-                ...prev,
-                bank_name: bank_name_and_branch,
-              })); // Set the bank details
-            }
-          }
-        } catch (err) {
-          setError("Invalid IFSC Code or API Error");
-        }
-      };
+ useEffect(() => {
+   if (userFormData?.ifsc?.length === 11) {
+     const fetchBankDetails = async () => {
+       try {
+         if (userFormData?.ifsc) {
+           setError(""); // Clear previous errors
+           const res = await axios.get(
+             `http://localhost:5001/api/ifsc/${userFormData?.ifsc}` // Use the backend proxy
+           );
+           if (res?.status === 200) {
+             const bank_name_and_branch = `${res?.data?.BANK}-${res?.data?.BRANCH}-${res?.data?.CENTRE}`;
+             setUserFormData((prev) => ({
+               ...prev,
+               bank_name: bank_name_and_branch,
+             }));
+           }
+         }
+       } catch (err) {
+         setUserFormData((prev) => ({
+           ...prev,
+           ifsc: "Invalid IFSC Code or API Error",
+         }));
+       }
+     };
 
-      fetchBankDetails(); // Call the function
-    } else {
-      setUserFormData((prev) => ({
-        ...prev,
-        bank_name: "",
-      }));
-    }
-  }, [userFormData?.ifsc]);
+     fetchBankDetails();
+   } else {
+     setUserFormData((prev) => ({
+       ...prev,
+       bank_name: "",
+     }));
+   }
+ }, [userFormData?.ifsc]);
+
 
   const validateDrivingLicenseNumber = (licenseNo) => {
     const licensePattern = /^[A-Z]{2}\d{13}$/; // Format: AA + 13 digits
@@ -337,6 +343,7 @@ const UserModal = (props) => {
       setError(""); // Clear the error if valid
     }
   };
+  console.log({ siteData });
 
   const handleSelectSite = (selectedOption) => {
     setUserFormData((prev) => ({

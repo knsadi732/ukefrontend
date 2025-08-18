@@ -10,7 +10,7 @@ class WorkOrderService {
     try {
       const response = await axios({
         method: "post",
-        url: `http://localhost:5000/api/work-order/create`,
+        url: `/api/work-order/create`,
         data: formData,
         headers: {
           "content-type": "multipart/form-data",
@@ -27,7 +27,7 @@ class WorkOrderService {
     try {
       const response = await axios({
         method: "post",
-        url: `http://localhost:5000/api/work-order/get-work_orders`,
+        url: `/api/work-order/get-work_orders`,
         data: formData,
         headers: {
           "content-type": "multipart/form-data",
@@ -44,7 +44,7 @@ class WorkOrderService {
     try {
       const response = await axios({
         method: "post",
-        url: `http://localhost:5000/api/work-order/get-work_order-by-id`,
+        url: `/api/work-order/get-work_order-by-id`,
         data: formData,
         headers: {
           "content-type": "multipart/form-data",
@@ -61,7 +61,7 @@ class WorkOrderService {
     try {
       const response = await axios({
         method: "post",
-        url: `http://localhost:5000/api/work-order/update-work_order-by-id/${id}`,
+        url: `/api/work-order/update-work_order-by-id/${id}`,
         data: formData,
         headers: {
           "content-type": "multipart/form-data",
@@ -78,7 +78,7 @@ class WorkOrderService {
     try {
       const response = await axios({
         method: "post",
-        url: `http://localhost:5000/api/WorkOrder/delete-WorkOrder-by-id`,
+        url: `/api/WorkOrder/delete-WorkOrder-by-id`,
         data: formData,
         headers: {
           "content-type": "multipart/form-data",

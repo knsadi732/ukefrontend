@@ -18,8 +18,6 @@ const WorkOrderModal = (props) => {
     setLoading,
   } = props;
 
-  console.log({ data });
-
   const [loadingButton, setLoadingButton] = useState(false);
   const [workOrderFormData, setWorkOrderFormData] = useState(data);
 
@@ -33,7 +31,7 @@ const WorkOrderModal = (props) => {
     });
   };
 
-  console.log({ workOrderFormData });
+
 
   const handleChange = (e) => {
     let { name, value } = e.target;
@@ -43,14 +41,12 @@ const WorkOrderModal = (props) => {
     }));
   };
   const handleChangeOption = (e) => {
-    console.log({ e });
     setWorkOrderFormData((prev) => ({
       ...prev,
       site_id: e?.value?._id,
       site_name: e?.value?.site_name,
     }));
   };
-  console.log({ workOrderFormData });
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -97,7 +93,6 @@ const WorkOrderModal = (props) => {
     if (dropdownLabel === "Update Work Order") {
       form_data.append("id", workOrderFormData?._id);
       workOrderService.UpdateWorkOrder(id, form_data).then((res) => {
-        console.log({ res });
         setLoadingButton(false);
         if (res?.status === 200) {
           setModal(false);
@@ -121,24 +116,10 @@ const WorkOrderModal = (props) => {
       });
     } else {
       workOrderService.CreateWorkOrder(form_data).then((res) => {
-        console.log({ res });
+
         setLoadingButton(false);
         if (res?.status === 201) {
           setModal(false);
-          // setLoading(true);
-          // workOrderService.GetSites().then((res) => {
-          //   setLoading(false);
-          //   if (res?.status === 200) {
-          //     const roles = res?.data?.docs.map((val, index) => ({
-          //       no: index + 1,
-          //       ...val,
-          //     }));
-          //     setData(roles);
-          //     setFilterData(roles);
-          //   } else {
-          //     console.warn(res?.message);
-          //   }
-          // });
         } else {
           console.warn(res?.message);
         }
@@ -173,7 +154,6 @@ const WorkOrderModal = (props) => {
                       onChange={handleChangeOption}
                       value={siteList.find(
                         (option) =>
-                          // console.log(option.value._id , data?.site_id)
                           option.value._id === data?.site_id
                       )}
                     />

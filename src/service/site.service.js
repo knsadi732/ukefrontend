@@ -10,7 +10,7 @@ class SiteService {
     try {
       const response = await axios({
         method: "post",
-        url: `http://localhost:5000/api/site/create`,
+        url: `/api/site/create`,
         data: formData,
         headers: {
           "content-type": "multipart/form-data",
@@ -27,9 +27,9 @@ class SiteService {
     try {
       const response = await axios({
         method: "post",
-        url: `http://localhost:5000/api/site/get-sites`,
+        url: `/api/site/get-sites`,
         headers: {
-          "content-type": "multipart/form-data",
+          "Content-Type": "application/json",
         },
       });
 
@@ -43,7 +43,7 @@ class SiteService {
     try {
       const response = await axios({
         method: "post",
-        url: `http://localhost:5000/api/site/get-site-by-id`,
+        url: `/api/site/get-site-by-id`,
         data: formData,
         headers: {
           "content-type": "multipart/form-data",
@@ -57,10 +57,11 @@ class SiteService {
     }
   };
   UpdateSite = async (id, formData) => {
+    console.log({id})
     try {
       const response = await axios({
         method: "post",
-        url: `http://localhost:5000/api/site/update-site-by-id/${id}`,
+        url: `/api/site/update-site-by-id/${id}`,
         data: formData,
         headers: {
           "content-type": "multipart/form-data",
@@ -77,7 +78,7 @@ class SiteService {
     try {
       const response = await axios({
         method: "post",
-        url: `http://localhost:5000/api/site/delete-site-by-id`,
+        url: `/api/site/delete-site-by-id`,
         data: formData,
         headers: {
           "content-type": "multipart/form-data",

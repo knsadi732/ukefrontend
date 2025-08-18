@@ -21,14 +21,12 @@ const ViewRoles = () => {
       try {
         setLoading(true);
         const res = await roleService.GetRoles();
-        console.log({ res });
         setLoading(false);
         if (res?.status === 200) {
           const roles = res?.data?.docs.map((val, index) => ({
             no: index + 1,
             ...val,
           }));
-          console.log({ roles });
           setRoleData(roles);
           setFilterData(roles);
         } else {
@@ -46,8 +44,6 @@ const ViewRoles = () => {
   const handleEdit = (data) => {
     // getRolesById;
     try {
-      // setLoading(true);
-      console.log({ data });
       const form_data = new FormData();
       form_data.append("id", data?.id);
       roleService.getRolesById(form_data).then((res) => {
@@ -69,7 +65,6 @@ const ViewRoles = () => {
     // getRolesById;
     try {
       setLoading(true);
-      console.log({ id });
       const form_data = new FormData();
       form_data.append("id", id);
       roleService.DeleteRoleById(form_data).then((res) => {

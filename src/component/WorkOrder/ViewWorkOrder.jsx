@@ -311,11 +311,9 @@ const ViewWorkOrder = () => {
 
   const handleEdit = (data) => {
     try {
-      console.log({data})
       const form_data = new FormData();
       form_data.append("id", data?._id);
       workOrderService.getWorkOrderById(form_data).then((res) => {
-        console.log({ res });
         if (res?.status === 200) {
           setId(data?._id);
           setDropdownLabel("Update Work Order");
@@ -333,14 +331,13 @@ const ViewWorkOrder = () => {
   const handleDelete = () => {};
 
   const handleSelectSite = (e) => {
-    console.log({ e });
+
     if (e.value === "all") {
       setFilterData(workOrderData);
     } else {
       const selected_value = workOrderData.filter(
         (val) => val?.site_id === parseInt(e.value?.site_id)
       );
-      console.log({ selected_value });
       setFilterData(selected_value);
     }
   };

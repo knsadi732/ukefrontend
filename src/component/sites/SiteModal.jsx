@@ -27,8 +27,6 @@ const SiteModal = (props) => {
     });
   };
 
-  console.log({ siteFormData });
-
   const handleChange = (e) => {
     let { name, value } = e.target;
     setSiteFormData((prev) => ({
@@ -48,15 +46,14 @@ const SiteModal = (props) => {
         return;
       }
     }
-
+    console.log({ siteFormData });
     const form_data = new FormData();
     form_data.append("site_name", siteFormData?.site_name);
     form_data.append("site_shorthand", siteFormData?.site_shorthand);
 
     if (dropdownLabel === "Edit Site") {
-      form_data.append("id", siteFormData?._id);
-      siteService.UpdateSite(siteFormData?._id, form_data).then((res) => {
-        console.log({ res });
+      form_data.append("id", siteFormData?.id);
+      siteService.UpdateSite(siteFormData?.id, form_data).then((res) => {
         setLoadingButton(false);
         if (res?.status === 200) {
           setModal(false);
@@ -80,7 +77,6 @@ const SiteModal = (props) => {
       });
     } else {
       siteService.CreateSite(form_data).then((res) => {
-        console.log({ res });
         setLoadingButton(false);
         if (res?.status === 201) {
           setModal(false);
@@ -104,7 +100,6 @@ const SiteModal = (props) => {
       });
     }
   };
-  
 
   try {
     return (

@@ -3,7 +3,6 @@ import { Modal } from "react-bootstrap";
 import { viewURL } from "../common/stringFormatter";
 const ViewDocuments = (props) => {
   const { data } = props;
-  console.log({ data });
   const rowClass =
     "d-flex justify-content-start flex-column col-md-6 col-12 p-2 col-xl-4";
   try {

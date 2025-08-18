@@ -34,7 +34,6 @@ function SearchBox(props) {
         .split(" ")
         .filter((item) => item !== "");
       let results = Object.entries(data).filter(([key, entry]) => {
-        console.log({ entry });
         return searchQueries.some((item) => {
           item = item?.toString().toLowerCase();
 
@@ -53,7 +52,6 @@ function SearchBox(props) {
       });
 
       results = Object.fromEntries(results);
-      console.log({ results });
       if (return_array) {
         results = Object.values(results);
       }
@@ -77,7 +75,6 @@ function SearchBox(props) {
       className={`form-control ${className}`}
       placeholder={placeholder}
       onChange={(e) => {
-        console.log(e.target.value);
         setSearchQuery(e.target.value);
       }}
       value={searchQuery}

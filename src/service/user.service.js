@@ -10,7 +10,7 @@ class UserService {
     try {
       const response = await axios({
         method: "post",
-        url: `http://localhost:5000/api/user/create`,
+        url: `/api/user/create`,
         data: formData,
         headers: {
           "content-type": "multipart/form-data",
@@ -23,27 +23,27 @@ class UserService {
       throw error;
     }
   };
-  GetUsers = async () => {
-    try {
-      const response = await axios({
-        method: "post",
-        url: `http://localhost:5000/api/user/get-users`,
-        headers: {
-          "content-type": "multipart/form-data",
-        },
-      });
+  GetUsers = (formdata) => {
+    const token = localStorage.getItem("accessToken");
 
-      return response.data;
-    } catch (error) {
-      console.error("Error in CreateUser service:", error);
-      throw error;
-    }
+    return axios({
+      method: "post",
+      url: `/api/user/get-users`,
+      data: formdata,
+      headers: {
+        Authorization: token ? `Bearer ${token}` : "",
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.data)
+      .catch((error) => console.log("API Error:", error));
   };
+
   getUserById = async (formData) => {
     try {
       const response = await axios({
         method: "post",
-        url: `http://localhost:5000/api/user/get-user-by-id`,
+        url: `/api/user/get-user-by-id`,
         data: formData,
         headers: {
           "content-type": "multipart/form-data",
@@ -60,7 +60,7 @@ class UserService {
     try {
       const response = await axios({
         method: "post",
-        url: `http://localhost:5000/api/user/update-user-by-id/${id}`,
+        url: `/api/user/update-user-by-id/${id}`,
         data: formData,
         headers: {
           "content-type": "multipart/form-data",
@@ -73,11 +73,11 @@ class UserService {
       throw error;
     }
   };
-  DeleteUserById = async ( formData) => {
+  DeleteUserById = async (formData) => {
     try {
       const response = await axios({
         method: "post",
-        url: `http://localhost:5000/api/user/delete-user-by-id`,
+        url: `/api/user/delete-user-by-id`,
         data: formData,
         headers: {
           "content-type": "multipart/form-data",

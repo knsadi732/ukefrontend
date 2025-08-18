@@ -5,7 +5,7 @@ class RoleService {
     try {
       const response = await axios({
         method: "post",
-        url: `http://localhost:5000/api/role/create`,
+        url: `/api/role/create`,
         data: formData,
         headers: {
           "content-type": "multipart/form-data",
@@ -23,7 +23,7 @@ class RoleService {
     try {
       const response = await axios({
         method: "post",
-        url: `http://localhost:5000/api/role/get-roles`,
+        url: `/api/role/get-roles`,
         headers: {
           "content-type": "multipart/form-data",
         },
@@ -39,7 +39,7 @@ class RoleService {
     try {
       const response = await axios({
         method: "post",
-        url: `http://localhost:5000/api/role/get-roles-by-id`,
+        url: `/api/role/get-roles-by-id`,
         data: formData,
         headers: {
           "content-type": "multipart/form-data",
@@ -60,7 +60,7 @@ class RoleService {
     try {
       const response = await axios({
         method: "post",
-        url: `http://localhost:5000/api/role/delete-roles-by-id`,
+        url: `/api/role/delete-roles-by-id`,
         data: formData,
         headers: {
           "content-type": "multipart/form-data",

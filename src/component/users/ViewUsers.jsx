@@ -206,6 +206,7 @@ const ViewUsers = () => {
           id={id}
           show={modal}
           setData={setData}
+          siteDataName={siteData}
           setLoading={setLoading}
           dropdownLabel={dropdownLabel}
           setFilterData={setFilterData}

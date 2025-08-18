@@ -14,7 +14,7 @@ const CustomTable = (props) => {
     handleRedirectToDetails,
   } = props;
 
-  console.log({ body }, body[0]);
+
 
   return (
     <>

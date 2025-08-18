@@ -27,7 +27,7 @@ const RoleModal = (props) => {
     });
   };
 
-  console.log({ userFormData });
+
 
   const handleChange = (e) => {
     let { name, value } = e.target;
@@ -54,9 +54,8 @@ const RoleModal = (props) => {
       form_data.append(key, userFormData[key]);
     }
 
-    console.log([...form_data.entries()]);
+
     roleService.CreateRole(form_data).then((res) => {
-      console.log({ res });
       setLoadingButton(false);
       if (res?.status === 201) {
         setModal(false);
