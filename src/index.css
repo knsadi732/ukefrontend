@@ -5,9 +5,112 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #f8f9fa;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* Global styles for the ERP system */
+.container-fluid {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.card {
+  border: none;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  margin-bottom: 1.5rem;
+}
+
+.card-header {
+  background-color: #fff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  font-weight: 600;
+}
+
+.btn {
+  border-radius: 0.375rem;
+}
+
+.btn-primary {
+  background-color: #0061f2;
+  border-color: #0061f2;
+}
+
+.btn-primary:hover {
+  background-color: #0051d4;
+  border-color: #0051d4;
+}
+
+.btn-success {
+  background-color: #00ac69;
+  border-color: #00ac69;
+}
+
+.btn-success:hover {
+  background-color: #008f5d;
+  border-color: #008f5d;
+}
+
+.btn-danger {
+  background-color: #e91e63;
+  border-color: #e91e63;
+}
+
+.btn-danger:hover {
+  background-color: #d81557;
+  border-color: #d81557;
+}
+
+.btn-warning {
+  background-color: #f7c32e;
+  border-color: #f7c32e;
+}
+
+.btn-warning:hover {
+  background-color: #e6b21d;
+  border-color: #e6b21d;
+}
+
+.btn-info {
+  background-color: #1b9eea;
+  border-color: #1b9eea;
+}
+
+.btn-info:hover {
+  background-color: #178ad6;
+  border-color: #178ad6;
+}
+
+.table {
+  background-color: #fff;
+}
+
+.table th {
+  font-weight: 600;
+}
+
+.pagination .page-link {
+  color: #0061f2;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #0061f2;
+  border-color: #0061f2;
+}
+
+.form-control:focus {
+  border-color: #0061f2;
+  box-shadow: 0 0 0 0.2rem rgba(0, 97, 242, 0.25);
+}
+
+.navbar-brand {
+  font-weight: 600;
+}
+
+.offcanvas {
+  width: 280px;
 }
