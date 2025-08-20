@@ -23,7 +23,9 @@ function CardBlock(props) {
                     style={{ margin: "5px" }}
                   >
                     {logo && (
-                      <img className="" src={logo} width="80%" height="80%" />
+                      <div className="card-icon-ellipse">
+                        <img className="" src={logo} width="80%" height="80%" alt={name} />
+                      </div>
                     )}
                   </p>
                   <p className="card--text center">{name}</p>
